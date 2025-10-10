@@ -1,11 +1,34 @@
-import { useState } from "react";
-import { Menu, X, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, Globe, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
 
 export const Header = () => {
   const [language, setLanguage] = useState<"en" | "hi">("en");
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check for saved theme preference or default to light mode
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = savedTheme === 'dark';
+    setDarkMode(prefersDark);
+    if (prefersDark) {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const toggleLanguage = () => {
     setLanguage(language === "en" ? "hi" : "en");
@@ -13,6 +36,8 @@ export const Header = () => {
 
   const nav = [
     { en: "Home", hi: "होम", path: "/" },
+    { en: "Dashboard", hi: "डैशबोर्ड", path: "/dashboard" },
+    { en: "Training", hi: "प्रशिक्षण", path: "/training" },
     { en: "Risk Check", hi: "जोखिम जाँच", path: "/risk-assessment" },
     { en: "Map", hi: "नक्शा", path: "/geo-fencing" },
     { en: "Community", hi: "समुदाय", path: "/community" },
@@ -26,10 +51,10 @@ export const Header = () => {
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-gradient-hero flex items-center justify-center text-primary-foreground font-bold text-xl shadow-md">
-              BS
+              FS
             </div>
             <span className="font-bold text-lg hidden sm:inline">
-              {language === "en" ? "BioSecure India" : "बायोसिक्योर इंडिया"}
+              {language === "en" ? "Farm Secure" : "फार्म सिक्योर"}
             </span>
           </Link>
 
@@ -47,6 +72,15 @@ export const Header = () => {
           </nav>
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleDarkMode}
+              className="rounded-full"
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
             <Button
               variant="ghost"
               size="icon"

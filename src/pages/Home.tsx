@@ -83,11 +83,11 @@ export default function Home() {
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in drop-shadow-lg">
-              Protecting lives and livelihoods with smart biosecurity
+              Protecting Farms, Securing Futures with Farm Secure
             </h1>
             
             <p className="text-xl md:text-2xl text-white/90 mb-4 animate-fade-in font-semibold drop-shadow">
-              Community-backed protection for small farmers
+              Community-powered biosecurity for every farmer
             </p>
 
             <p className="text-lg md:text-xl text-white/80 mb-8 animate-fade-in italic drop-shadow">

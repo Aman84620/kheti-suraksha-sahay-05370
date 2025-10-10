@@ -11,6 +11,8 @@ import Community from "./pages/Community";
 import Support from "./pages/Support";
 import Admin from "./pages/Admin";
 import FarmerProfile from "./pages/FarmerProfile";
+import FarmerDashboard from "./pages/FarmerDashboard";
+import Training from "./pages/Training";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<FarmerDashboard />} />
+          <Route path="/training" element={<Training />} />
           <Route path="/risk-assessment" element={<RiskAssessment />} />
           <Route path="/geo-fencing" element={<GeoFencing />} />
           <Route path="/community" element={<Community />} />
