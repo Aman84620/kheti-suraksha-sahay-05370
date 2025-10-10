@@ -15,11 +15,18 @@ import {
   BarChart3,
   Calendar
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 const FarmerDashboard = () => {
   const [language, setLanguage] = useState<"en" | "hi">("en");
+  const [isVisible, setIsVisible] = useState(false);
+  const [activeCard, setActiveCard] = useState<number | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const content = {
     en: {
@@ -147,16 +154,19 @@ const FarmerDashboard = () => {
     <div className="min-h-screen bg-background pt-20 pb-12">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex justify-between items-start mb-8">
+        <div className={`flex justify-between items-start mb-8 transition-all duration-1000 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
+        }`}>
           <div>
-            <h1 className="text-4xl font-bold mb-2 bg-gradient-hero bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-hero bg-clip-text text-transparent animate-fade-in">
               {t.title}
             </h1>
-            <p className="text-lg text-muted-foreground">{t.subtitle}</p>
+            <p className="text-lg text-muted-foreground animate-fade-in" style={{ animationDelay: '0.2s' }}>{t.subtitle}</p>
           </div>
           <Button
             variant="outline"
             onClick={() => setLanguage(language === "en" ? "hi" : "en")}
+            className="hover:scale-110 transition-transform duration-300"
           >
             {language === "en" ? "हिं" : "EN"}
           </Button>
@@ -165,19 +175,31 @@ const FarmerDashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, idx) => (
-            <Card key={idx} className="animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
+            <Card 
+              key={idx} 
+              onMouseEnter={() => setActiveCard(idx)}
+              onMouseLeave={() => setActiveCard(null)}
+              className={`transition-all duration-700 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 cursor-pointer border-2 ${
+                activeCard === idx ? 'border-primary scale-105' : 'border-transparent'
+              }`}
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
+                transitionDelay: `${idx * 150}ms`
+              }}
+            >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-lg ${stat.bgColor}`}>
+                  <div className={`p-3 rounded-lg ${stat.bgColor} transition-all duration-300 ${activeCard === idx ? 'scale-110 rotate-12' : ''}`}>
                     <stat.icon className={`h-6 w-6 ${stat.color}`} />
                   </div>
-                  <Badge variant={stat.trend === "up" ? "default" : "secondary"} className="flex items-center gap-1">
+                  <Badge variant={stat.trend === "up" ? "default" : "secondary"} className="flex items-center gap-1 transition-transform duration-300 hover:scale-110">
                     {stat.trend === "up" ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                     {stat.change}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground mb-1">{stat.title}</p>
-                <p className="text-3xl font-bold">{stat.value}</p>
+                <p className="text-sm text-muted-foreground mb-1 transition-colors">{stat.title}</p>
+                <p className={`text-3xl font-bold transition-all duration-300 ${activeCard === idx ? 'scale-110 text-primary' : ''}`}>{stat.value}</p>
               </CardContent>
             </Card>
           ))}
@@ -185,10 +207,12 @@ const FarmerDashboard = () => {
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {/* Biosecurity Score */}
-          <Card>
+          <Card className={`transition-all duration-1000 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 ${
+            isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-16'
+          }`} style={{ transitionDelay: '500ms' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+                <Shield className="h-5 w-5 animate-pulse" />
                 {t.biosecurityScore}
               </CardTitle>
             </CardHeader>
@@ -245,10 +269,12 @@ const FarmerDashboard = () => {
           </Card>
 
           {/* Training Progress */}
-          <Card>
+          <Card className={`transition-all duration-1000 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
+          }`} style={{ transitionDelay: '600ms' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sprout className="h-5 w-5" />
+                <Sprout className="h-5 w-5 animate-pulse" />
                 {t.trainingProgress}
               </CardTitle>
             </CardHeader>
@@ -276,10 +302,12 @@ const FarmerDashboard = () => {
           </Card>
 
           {/* Community Rank */}
-          <Card>
+          <Card className={`transition-all duration-1000 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 ${
+            isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-16'
+          }`} style={{ transitionDelay: '700ms' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
+                <BarChart3 className="h-5 w-5 animate-pulse" />
                 {t.communityRank}
               </CardTitle>
             </CardHeader>
@@ -308,18 +336,28 @@ const FarmerDashboard = () => {
 
         {/* Recent Activity & Risk Trends */}
         <div className="grid md:grid-cols-2 gap-6">
-          <Card>
+          <Card className={`transition-all duration-1000 hover:shadow-xl hover:shadow-primary/10 ${
+            isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-16'
+          }`} style={{ transitionDelay: '800ms' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
+                <Activity className="h-5 w-5 animate-pulse" />
                 {t.recentActivity}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {recentActivities.map((activity, idx) => (
-                  <div key={idx} className="flex items-start gap-3 pb-3 border-b last:border-0">
-                    <activity.icon className={`h-5 w-5 mt-0.5 ${activity.color}`} />
+                  <div 
+                    key={idx} 
+                    className={`flex items-start gap-3 pb-3 border-b last:border-0 transition-all duration-500 hover:scale-105 hover:bg-secondary/50 p-2 rounded-lg cursor-pointer ${
+                      isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+                    }`}
+                    style={{ transitionDelay: `${900 + idx * 100}ms` }}
+                  >
+                    <div className="p-2 rounded-full bg-secondary/50 hover:scale-110 transition-transform duration-300">
+                      <activity.icon className={`h-5 w-5 mt-0.5 ${activity.color}`} />
+                    </div>
                     <div className="flex-1">
                       <p className="font-medium text-sm">{activity.action}</p>
                       <p className="text-xs text-muted-foreground">{activity.time}</p>
@@ -330,10 +368,12 @@ const FarmerDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className={`transition-all duration-1000 hover:shadow-xl hover:shadow-primary/10 ${
+            isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-16'
+          }`} style={{ transitionDelay: '800ms' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingDown className="h-5 w-5" />
+                <TrendingDown className="h-5 w-5 animate-pulse" />
                 {t.riskTrends}
               </CardTitle>
             </CardHeader>
