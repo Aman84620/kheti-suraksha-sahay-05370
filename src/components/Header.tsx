@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Globe, Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
+import { useLanguage, languages } from "@/contexts/LanguageContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Header = () => {
-  const [language, setLanguage] = useState<"en" | "hi">("en");
+  const { language, setLanguage, t } = useLanguage();
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -30,19 +37,16 @@ export const Header = () => {
     }
   };
 
-  const toggleLanguage = () => {
-    setLanguage(language === "en" ? "hi" : "en");
-  };
-
   const nav = [
-    { en: "Home", hi: "होम", path: "/" },
-    { en: "Dashboard", hi: "डैशबोर्ड", path: "/dashboard" },
-    { en: "Training", hi: "प्रशिक्षण", path: "/training" },
-    { en: "Risk Check", hi: "जोखिम जाँच", path: "/risk-assessment" },
-    { en: "Map", hi: "नक्शा", path: "/geo-fencing" },
-    { en: "Community", hi: "समुदाय", path: "/community" },
-    { en: "Support", hi: "सहायता", path: "/support" },
-    { en: "Profile", hi: "प्रोफ़ाइल", path: "/profile" },
+    { key: "home", path: "/" },
+    { key: "dashboard", path: "/dashboard" },
+    { key: "training", path: "/training" },
+    { key: "insurance", path: "/insurance" },
+    { key: "riskCheck", path: "/risk-assessment" },
+    { key: "map", path: "/geo-fencing" },
+    { key: "community", path: "/community" },
+    { key: "support", path: "/support" },
+    { key: "profile", path: "/profile" },
   ];
 
   return (
@@ -53,8 +57,8 @@ export const Header = () => {
             <div className="h-10 w-10 rounded-lg bg-gradient-hero flex items-center justify-center text-primary-foreground font-bold text-xl shadow-md">
               FS
             </div>
-            <span className="font-bold text-lg hidden sm:inline">
-              {language === "en" ? "Farm Secure" : "फार्म सिक्योर"}
+            <span className="font-extrabold text-xl hidden sm:inline tracking-tight">
+              Farm Secure
             </span>
           </Link>
 
@@ -64,9 +68,9 @@ export const Header = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+                className="text-sm font-bold text-foreground/80 hover:text-foreground transition-colors hover:scale-110 transition-transform"
               >
-                {language === "en" ? item.en : item.hi}
+                {t(item.key)}
               </Link>
             ))}
           </nav>
@@ -81,16 +85,31 @@ export const Header = () => {
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleLanguage}
-              className="rounded-full"
-              aria-label="Change language"
-            >
-              <Globe className="h-5 w-5" />
-              <span className="ml-1 text-xs font-semibold">{language.toUpperCase()}</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full hover:scale-110 transition-transform"
+                  aria-label="Change language"
+                >
+                  <Languages className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-card/95 backdrop-blur-sm">
+                {languages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={`font-bold cursor-pointer ${
+                      language === lang.code ? "bg-primary/10 text-primary" : ""
+                    }`}
+                  >
+                    {lang.nativeName}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Mobile Menu */}
             <Sheet>
@@ -105,9 +124,9 @@ export const Header = () => {
                     <Link
                       key={item.path}
                       to={item.path}
-                      className="text-base font-medium text-foreground/80 hover:text-foreground transition-colors py-2 border-b border-border"
+                      className="text-lg font-bold text-foreground/80 hover:text-foreground transition-colors py-3 border-b border-border hover:translate-x-2 transition-transform"
                     >
-                      {language === "en" ? item.en : item.hi}
+                      {t(item.key)}
                     </Link>
                   ))}
                 </nav>
