@@ -47,6 +47,7 @@ export const Header = () => {
     { key: "community", path: "/community" },
     { key: "support", path: "/support" },
     { key: "profile", path: "/profile" },
+    { key: "login", path: "/login" },
   ];
 
   return (

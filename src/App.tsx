@@ -16,6 +16,7 @@ import FarmerDashboard from "./pages/FarmerDashboard";
 import Training from "./pages/Training";
 import Insurance from "./pages/Insurance";
 import NotFound from "./pages/NotFound";
+import AuthPage from "./components/Auth"; // ✅ Correct import
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,12 @@ const App = () => (
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
+            
+            {/* Auth Routes */}
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/signup" element={<AuthPage />} />
+            
+            {/* Main App Routes */}
             <Route path="/dashboard" element={<FarmerDashboard />} />
             <Route path="/training" element={<Training />} />
             <Route path="/insurance" element={<Insurance />} />
@@ -38,7 +45,8 @@ const App = () => (
             <Route path="/support" element={<Support />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/profile" element={<FarmerProfile />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            
+            {/* Catch-all 404 Route - MUST BE LAST */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
