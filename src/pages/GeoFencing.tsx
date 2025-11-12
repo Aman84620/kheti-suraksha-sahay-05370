@@ -32,6 +32,7 @@ import {
   MapPinned,
   Trash2
 } from "lucide-react";
+import { ExampleNearbyZonesMap } from "@/components/Map";
 
 export default function GeoFencing() {
   const [zones, setZones] = useState([
@@ -194,148 +195,8 @@ export default function GeoFencing() {
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <Card className="p-0 h-[700px] relative overflow-hidden border-2 shadow-2xl">
-              <div 
-                ref={mapRef}
-                className="absolute inset-0 bg-gradient-to-br from-blue-100 via-green-50 to-blue-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800"
-              >
-                <div className="absolute inset-0">
-                  <svg className="w-full h-full opacity-20">
-                    <defs>
-                      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1"/>
-                      </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#grid)" />
-                  </svg>
-                </div>
-
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-full h-full">
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                      <div className="text-center mb-4">
-                        <MapPin className="h-8 w-8 mx-auto text-blue-600 animate-bounce" />
-                        <p className="text-sm font-semibold text-gray-600 mt-2">Bhopal, MP</p>
-                      </div>
-                    </div>
-
-                    {zones.map((zone, idx) => {
-                      const angle = (idx * 360) / zones.length;
-                      const distance = 150 + (idx * 50);
-                      const x = Math.cos((angle * Math.PI) / 180) * distance;
-                      const y = Math.sin((angle * Math.PI) / 180) * distance;
-
-                      return (
-                        <div
-                          key={zone.id}
-                          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                          style={{
-                            transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`
-                          }}
-                        >
-                          <div 
-                            className={`rounded-full border-4 ${getRiskBorderColor(zone.risk)} bg-white/80 backdrop-blur-sm cursor-pointer transition-all hover:scale-125 hover:shadow-2xl group relative`}
-                            style={{
-                              width: `${zone.radius / 8}px`,
-                              height: `${zone.radius / 8}px`,
-                            }}
-                            onClick={() => setSelectedZone(zone)}
-                          >
-                            <div className={`absolute inset-0 rounded-full ${getRiskColor(zone.risk)} opacity-20 animate-pulse`} />
-                            
-                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                              <Shield className={`h-6 w-6 ${zone.risk === "low" ? "text-green-600" : zone.risk === "medium" ? "text-yellow-600" : "text-red-600"}`} />
-                            </div>
-
-                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-xl border-2 border-gray-200 dark:border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                              <p className="text-xs font-bold">{zone.name}</p>
-                              <p className="text-xs text-muted-foreground">{zone.farmers} farmers</p>
-                            </div>
-
-                            <div className={`absolute inset-0 rounded-full border-2 ${getRiskBorderColor(zone.risk)} animate-ping opacity-30`} />
-                          </div>
-
-                          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                            <Badge className={`${getRiskColor(zone.risk)} text-white text-xs`}>
-                              {zone.risk.toUpperCase()}
-                            </Badge>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {isCreatingZone && (
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div 
-                          className="rounded-full border-4 border-dashed border-primary bg-primary/10 animate-pulse"
-                          style={{
-                            width: `${newZoneRadius[0] / 8}px`,
-                            height: `${newZoneRadius[0] / 8}px`,
-                          }}
-                        >
-                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <Plus className="h-8 w-8 text-primary" />
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="absolute top-4 left-4 space-y-2 z-10">
-                  <Button
-                    variant={isCreatingZone ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setIsCreatingZone(!isCreatingZone)}
-                    className="shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white border-2"
-                  >
-                    {isCreatingZone ? <X className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
-                    {isCreatingZone ? "Cancel" : "Create Zone"}
-                  </Button>
-                  <Button variant="outline" size="sm" className="shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white border-2 w-full">
-                    <Layers className="h-4 w-4 mr-2" />
-                    Layers
-                  </Button>
-                </div>
-
-                <div className="absolute top-4 right-4 space-y-2 z-10">
-                  <Button variant="outline" size="icon" className="shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white border-2">
-                    <ZoomIn className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="icon" className="shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white border-2">
-                    <ZoomOut className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="icon" className="shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white border-2">
-                    <Target className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="icon" className="shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white border-2">
-                    <Maximize className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <div className="absolute bottom-4 right-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm p-4 rounded-xl shadow-2xl border-2 border-gray-200 dark:border-gray-700 z-10">
-                  <div className="text-xs font-bold mb-3">Risk Levels / जोखिम स्तर</div>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-green-600" />
-                      <span className="font-medium">Low / कम</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-yellow-500 border-2 border-yellow-600" />
-                      <span className="font-medium">Medium / मध्यम</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-red-500 border-2 border-red-600" />
-                      <span className="font-medium">High / उच्च</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute bottom-4 left-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-xl border-2 border-gray-200 dark:border-gray-700 text-xs font-semibold z-10">
-                  <MapPin className="inline h-3 w-3 mr-1" />
-                  Lat: {mapCenter.lat.toFixed(4)}, Lng: {mapCenter.lng.toFixed(4)}
-                </div>
-              </div>
+            <Card className="p-0 h-[700px] overflow-hidden border-2 shadow-2xl">
+              <ExampleNearbyZonesMap />
             </Card>
           </div>
 
@@ -578,6 +439,7 @@ export default function GeoFencing() {
           </div>
         </div>
       </div>
+      
     </div>
   );
 }
